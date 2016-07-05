@@ -6,6 +6,7 @@ description      'Installs/Configures/Runs riemann'
 version          "0.1"
 
 recipe            "riemann::install", "Experiment setup for riemann"
+#link:<a target='_blank' href='http://%host%:4567/'>Launch Riemann's Dashboard</a>
 recipe            "riemann::dash",    "Dashboard setup"
 recipe            "riemann::server",  "server setup" 
 
