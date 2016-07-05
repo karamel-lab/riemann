@@ -6,19 +6,21 @@
 =begin
 #<
 Installs `riemann-dash` with `config.rb` and `config.json`
+
 TODO: 
+
   - add dynamic variables to the config files
 #>
 =end
 
-include_recipe 'riemann::infra'
+include_recipe 'runit'
 
 chef_gem 'riemann-dash' do
   compile_time false
   action :install
 end
 
-directory '/opt/riemann/dash' do
+directory "#{riemann.dashboard.config_dir}" do
   owner node.riemann.user
   group node.riemann.group
   mode '0755'
@@ -27,7 +29,7 @@ directory '/opt/riemann/dash' do
 end
 
 %w( config.rb config.json).each do |config_file|
-  template "/opt/riemann/dash/#{config_file}" do
+  template "#{riemann.dashboard.config_dir}/#{config_file}" do
     source "#{config_file}.erb"
     owner node.riemann.user
     group node.riemann.group
@@ -36,9 +38,6 @@ end
   end
 end
 
-service "riemann-dash" do
-    provider Chef::Provider::Service::Init::Debian
-    supports :restart => true, :stop => true, :start => true, :status => true
-    action :start
+runit_service "riemann-dash" do
+  default_logger true
 end
-
