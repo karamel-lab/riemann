@@ -7,6 +7,8 @@ default.riemann.config_dir    =   "#{node.riemann.install_dir}/etc"
 default.riemann.config_file    = "#{node.riemann.config_dir}/riemann.config"
 default.riemann.config_userfile    =   "#{node.riemann.config_dir}/user.config"
 
+default.riemann.dashboard.config_dir    =   "/opt/riemann/dash"
+
 default.riemann.download.url       = 'http://aphyr.com/riemann/'
 default.riemann.download.checksum  = 'ec697519e80781dc478983de04204760f2790da1715acfd233b35da071be5455'
 default.riemann.download.version   = '0.2.10'
