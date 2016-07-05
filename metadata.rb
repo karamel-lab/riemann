@@ -5,10 +5,10 @@ license          "Apache v2.0"
 description      'Installs/Configures/Runs riemann'
 version          "0.1"
 
-recipe            "riemann::install", "Experiment setup for riemann"
+recipe            "riemann::install", "Installs riemann"
 #link:<a target='_blank' href='http://%host%:4567/'>Launch Riemann's Dashboard</a>
-recipe            "riemann::dash",    "Dashboard setup"
-recipe            "riemann::server",  "server setup" 
+recipe            "riemann::dash",    "Setup and launch Riemann's Dashboard"
+recipe            "riemann::server",  "Setup and launch Riemann's Server" 
 
 
 depends "java"
