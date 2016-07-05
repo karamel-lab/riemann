@@ -1,4 +1,4 @@
 #!/bin/sh
 exec 2>&1
-cd /opt/riemann/dash
+cd <%= node.riemann.dashboard.config_dir %>
 exec chpst -u <%= node.riemann.user %> /opt/chef/embedded/bin/riemann-dash 
