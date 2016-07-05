@@ -1,4 +1,6 @@
 dependencies:
   - recipe: riemann::dash
+    local:  
+      - riemann::server
   - recipe: riemann::server
 
