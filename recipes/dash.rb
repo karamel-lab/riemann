@@ -20,7 +20,7 @@ chef_gem 'riemann-dash' do
   action :install
 end
 
-directory "#{riemann.dashboard.config_dir}" do
+directory "#{node.riemann.dashboard.config_dir}" do
   owner node.riemann.user
   group node.riemann.group
   mode '0755'
@@ -29,7 +29,7 @@ directory "#{riemann.dashboard.config_dir}" do
 end
 
 %w( config.rb config.json).each do |config_file|
-  template "#{riemann.dashboard.config_dir}/#{config_file}" do
+  template "#{node.riemann.dashboard.config_dir}/#{config_file}" do
     source "#{config_file}.erb"
     owner node.riemann.user
     group node.riemann.group
