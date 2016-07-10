@@ -1,7 +1,7 @@
 ; -*- mode: clojure; -*-
 ; vim: filetype=clojure
 
-(logging/init)
+(logging/init {:file "riemann.log"})
 
 ; Listen on the local interface over TCP (5555), UDP (5555), and websockets
 ; (5556)
@@ -9,25 +9,39 @@
   (tcp-server :host host :port <%= node.riemann.server.port %> )
   (ws-server  :host host :port <%= node.riemann.dash.port %> ))
 
+(require '[clj-http.client :as client]
+	'[riemann.query :as query])
+
 ; Expire old events from the index every 5 seconds.
 (periodically-expire 5)
 
-; Keep events in the index for 5 minutes by default.
-(let [index (default :ttl 300 (update-index (index)))]
-
-  ; Inbound events will be passed to these streams:
+(let [index (index)]
   (streams
-
-    ; Index all events immediately.
-    index
-
-    ; Calculate an overall rate of events.
-    (with {:metric 1 :host nil :state "ok" :service "events/sec"}
-      (rate 5 index))
-
-    ; Log expired events.
-    (expired
-      (fn [event] (info "expired" event)))
-))
+    (where (state "tablespoon")
+     (by :service
+      (where (tagged "GROUP_MEDIAN")
+        (coalesce 5
+          (smap folds/median 
+            (tag "median"
+              (with :host nil
+                index
+                )))
+          ))
+      (where (tagged "GROUP_AVERAGE")
+        (coalesce 5
+          (smap (fn [events] 
+            (let [ordered (->> events 
+              (remove (comp nil? :metric)) 
+              (sort-by :metric) 
+              vec)]
+            (let [amount (int (Math/floor (* (count ordered) 0.1)))]
+              (folds/mean (drop-last amount (drop amount ordered))))))
+          (tag "average"
+            (with :host nil
+              index)))
+          ))
+      (where (tagged "REGULAR")
+        index)
+      ))))
 
 (include "<%= node.riemann.config_userfile %>")
